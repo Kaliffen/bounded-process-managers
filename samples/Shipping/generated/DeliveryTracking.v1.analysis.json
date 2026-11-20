@@ -1,0 +1,75 @@
+{
+  "definition": "DeliveryTracking",
+  "version": 1,
+  "tableHash": "eef65e33508ba55d",
+  "states": 12,
+  "transitions": 20,
+  "terminalOutcomes": [
+    "Aborted(Killed)",
+    "Completed(Delivered)",
+    "Completed(ReturnedToSender)",
+    "Failed(CarrierUnresponsive)",
+    "Failed(LostInTransit)"
+  ],
+  "waitScopes": [
+    {
+      "scope": "Attempt#1",
+      "horizon": "2d",
+      "partialStates": 1
+    },
+    {
+      "scope": "Delivery.backoff1",
+      "horizon": "1d",
+      "partialStates": 1
+    },
+    {
+      "scope": "Attempt#2",
+      "horizon": "2d",
+      "partialStates": 1
+    },
+    {
+      "scope": "Delivery.backoff2",
+      "horizon": "1d",
+      "partialStates": 1
+    },
+    {
+      "scope": "Attempt#3",
+      "horizon": "2d",
+      "partialStates": 1
+    },
+    {
+      "scope": "Return",
+      "horizon": "7d",
+      "partialStates": 1
+    }
+  ],
+  "bound": {
+    "tDag": "15d",
+    "tDagSeconds": 1296000,
+    "maxTimerDeliveries_k": 3,
+    "maxProcessingSteps_r": 7,
+    "assumedTimerSkew_delta": "1s",
+    "assumedProcessingDelay_epsilon": "1s",
+    "tMax": "15d10s",
+    "tMaxSeconds": 1296010,
+    "formula": "T_max <= T_DAG + k*delta + r*epsilon = 15d + 3*1s + 7*1s = 15d10s",
+    "budget": "21d",
+    "criticalPath": [
+      "Init",
+      "Attempt#1",
+      "Delivery.backoff1",
+      "Attempt#2",
+      "Delivery.backoff2",
+      "Attempt#3",
+      "Return",
+      "Failed(LostInTransit)"
+    ]
+  },
+  "assumptions": [
+    "Every scheduled timer is durably delivered within delta of its deadline.",
+    "Every processing step (load, decide, append) completes within epsilon, including bounded append retries.",
+    "If the timer service or event store is unavailable indefinitely, no wall-clock bound follows.",
+    "T_DAG bounds the coordinator's own waiting; it does not force remote participants to reply."
+  ],
+  "warnings": []
+}

@@ -1,0 +1,30 @@
+<Project>
+  <!--
+    Import into any project that declares [BoundedProcess] definitions. After the C# compiler runs,
+    the bpm compiler validates, lowers, determinizes and analyses every definition. Any BPMxxx error
+    (unbounded join, cycle, budget exceeded, ...) fails the build like a normal compiler error, and the
+    generated transition tables / state diagrams / specs / analysis land in $(BpmOutputDir).
+
+    Properties (all optional):
+      BpmOutputDir   where generated artefacts go            (default: <project>/generated)
+      BpmCheck=true  fail if generated artefacts changed     (CI drift gate; nothing is written)
+      BpmSkip=true   skip the bpm step
+      BpmCliPath     path to Bpm.Cli.dll                     (default: built from this repo's src/Bpm.Cli)
+  -->
+  <PropertyGroup>
+    <BpmCliProject>$(MSBuildThisFileDirectory)..\src\Bpm.Cli\Bpm.Cli.csproj</BpmCliProject>
+    <BpmCliPath Condition="'$(BpmCliPath)' == ''">$(MSBuildThisFileDirectory)..\src\Bpm.Cli\bin\$(Configuration)\net10.0\Bpm.Cli.dll</BpmCliPath>
+    <BpmOutputDir Condition="'$(BpmOutputDir)' == ''">$(MSBuildProjectDirectory)\generated</BpmOutputDir>
+    <BpmCheckArg Condition="'$(BpmCheck)' == 'true'">--check</BpmCheckArg>
+  </PropertyGroup>
+
+  <!-- Build order only: makes sure the CLI is built before this project's post-build step. -->
+  <ItemGroup Condition="Exists('$(BpmCliProject)')">
+    <ProjectReference Include="$(BpmCliProject)" ReferenceOutputAssembly="false" Private="false" SkipGetTargetFrameworkProperties="true" />
+  </ItemGroup>
+
+  <Target Name="BpmCompile" AfterTargets="Build" Condition="'$(BpmSkip)' != 'true'">
+    <Error Condition="!Exists('$(BpmCliPath)')" Text="bpm compiler not found at $(BpmCliPath); build src/Bpm.Cli or set BpmCliPath." />
+    <Exec Command="dotnet &quot;$(BpmCliPath)&quot; compile &quot;$(TargetPath)&quot; --out &quot;$(BpmOutputDir)&quot; $(BpmCheckArg)" />
+  </Target>
+</Project>

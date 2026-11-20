@@ -1,0 +1,18 @@
+<Solution>
+  <Folder Name="/samples/">
+    <Project Path="samples/Demo/Demo.csproj" />
+    <Project Path="samples/OrderFulfillment.Tests/OrderFulfillment.Tests.csproj" />
+    <Project Path="samples/OrderFulfillment/OrderFulfillment.csproj" />
+    <Project Path="samples/Shipping.Tests/Shipping.Tests.csproj" />
+    <Project Path="samples/Shipping/Shipping.csproj" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/Bpm.Cli/Bpm.Cli.csproj" />
+    <Project Path="src/Bpm.Core/Bpm.Core.csproj" />
+    <Project Path="src/Bpm.Runtime/Bpm.Runtime.csproj" />
+    <Project Path="src/Bpm.Testing/Bpm.Testing.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Bpm.Tests/Bpm.Tests.csproj" />
+  </Folder>
+</Solution>

@@ -1,0 +1,50 @@
+stateDiagram-v2
+    state "Init" as s0
+    state "InvPay[Inv:wait, Pay:try1]" as s1
+    state "Failed(TimeoutAfterPayment_Refunded)" as s2
+    state "Failed(TimeoutBeforePayment)" as s3
+    state "InvPay[Inv:got, Pay:try1]" as s4
+    state "InvPay[Inv:wait, Pay:got]" as s5
+    state "InvPay[Inv:wait, Pay:backoff1]" as s6
+    state "Aborted(Killed)" as s7
+    state "Completed(Fulfilled)" as s8
+    state "InvPay[Inv:got, Pay:backoff1]" as s9
+    state "InvPay[Inv:wait, Pay:try2]" as s10
+    state "InvPay[Inv:got, Pay:try2]" as s11
+    [*] --> s0
+    s0 --> s1 : OrderSubmitted
+    s1 --> s2 : TimerFired(InvPay.T) [HasPayment && !HasInventory]
+    s1 --> s3 : TimerFired(InvPay.T) [!(HasPayment && !HasInventory)]
+    s1 --> s4 : InventoryReserved
+    s1 --> s5 : PaymentCaptured
+    s1 --> s6 : PaymentDeclined
+    s4 --> s2 : TimerFired(InvPay.T) [HasPayment && !HasInventory]
+    s4 --> s3 : TimerFired(InvPay.T) [!(HasPayment && !HasInventory)]
+    s4 --> s8 : PaymentCaptured
+    s4 --> s9 : PaymentDeclined
+    s5 --> s2 : TimerFired(InvPay.T) [HasPayment && !HasInventory]
+    s5 --> s3 : TimerFired(InvPay.T) [!(HasPayment && !HasInventory)]
+    s5 --> s8 : InventoryReserved
+    s6 --> s2 : TimerFired(InvPay.T) [HasPayment && !HasInventory]
+    s6 --> s3 : TimerFired(InvPay.T) [!(HasPayment && !HasInventory)]
+    s6 --> s9 : InventoryReserved
+    s6 --> s10 : TimerFired(InvPay.Pay.B)
+    s9 --> s2 : TimerFired(InvPay.T) [HasPayment && !HasInventory]
+    s9 --> s3 : TimerFired(InvPay.T) [!(HasPayment && !HasInventory)]
+    s9 --> s11 : TimerFired(InvPay.Pay.B)
+    s10 --> s2 : TimerFired(InvPay.T) [HasPayment && !HasInventory]
+    s10 --> s3 : TimerFired(InvPay.T) [!(HasPayment && !HasInventory)]
+    s10 --> s11 : InventoryReserved
+    s10 --> s5 : PaymentCaptured
+    s10 --> s2 : PaymentDeclined [HasPayment && !HasInventory]
+    s10 --> s3 : PaymentDeclined [!(HasPayment && !HasInventory)]
+    s11 --> s2 : TimerFired(InvPay.T) [HasPayment && !HasInventory]
+    s11 --> s3 : TimerFired(InvPay.T) [!(HasPayment && !HasInventory)]
+    s11 --> s8 : PaymentCaptured
+    s11 --> s2 : PaymentDeclined [HasPayment && !HasInventory]
+    s11 --> s3 : PaymentDeclined [!(HasPayment && !HasInventory)]
+    s2 --> [*]
+    s3 --> [*]
+    s7 --> [*]
+    s8 --> [*]
+    %% Every wait state also accepts Kill --> Aborted(Killed) (omitted for readability)

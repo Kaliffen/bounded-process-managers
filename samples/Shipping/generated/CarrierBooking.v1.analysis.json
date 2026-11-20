@@ -1,0 +1,180 @@
+{
+  "definition": "CarrierBooking",
+  "version": 1,
+  "tableHash": "cb54ca44e5d34a2e",
+  "states": 32,
+  "transitions": 76,
+  "terminalOutcomes": [
+    "Aborted(Killed)",
+    "Completed(Dispatched)",
+    "Failed(NoCarrierAvailable)",
+    "Failed(PickupNotConfirmed)"
+  ],
+  "waitScopes": [
+    {
+      "scope": "Quote#1",
+      "horizon": "15m",
+      "partialStates": 1
+    },
+    {
+      "scope": "Book.backoff1~2",
+      "horizon": "1m",
+      "partialStates": 1
+    },
+    {
+      "scope": "CoolingOff#1",
+      "horizon": "30m",
+      "partialStates": 1
+    },
+    {
+      "scope": "Book.backoff1",
+      "horizon": "1m",
+      "partialStates": 1
+    },
+    {
+      "scope": "Quote#2~2",
+      "horizon": "15m",
+      "partialStates": 1
+    },
+    {
+      "scope": "Pickup#1",
+      "horizon": "1h",
+      "partialStates": 1
+    },
+    {
+      "scope": "Quote#2",
+      "horizon": "15m",
+      "partialStates": 1
+    },
+    {
+      "scope": "Book.backoff2~4",
+      "horizon": "1m",
+      "partialStates": 1
+    },
+    {
+      "scope": "CoolingOff#2~2",
+      "horizon": "30m",
+      "partialStates": 1
+    },
+    {
+      "scope": "Book.backoff2~3",
+      "horizon": "1m",
+      "partialStates": 1
+    },
+    {
+      "scope": "Book.backoff2~2",
+      "horizon": "1m",
+      "partialStates": 1
+    },
+    {
+      "scope": "CoolingOff#2",
+      "horizon": "30m",
+      "partialStates": 1
+    },
+    {
+      "scope": "Book.backoff2",
+      "horizon": "1m",
+      "partialStates": 1
+    },
+    {
+      "scope": "Quote#3~4",
+      "horizon": "15m",
+      "partialStates": 1
+    },
+    {
+      "scope": "Pickup#2~2",
+      "horizon": "1h",
+      "partialStates": 1
+    },
+    {
+      "scope": "Quote#3~3",
+      "horizon": "15m",
+      "partialStates": 1
+    },
+    {
+      "scope": "Quote#3~2",
+      "horizon": "15m",
+      "partialStates": 1
+    },
+    {
+      "scope": "Pickup#2",
+      "horizon": "1h",
+      "partialStates": 1
+    },
+    {
+      "scope": "Quote#3",
+      "horizon": "15m",
+      "partialStates": 1
+    },
+    {
+      "scope": "CoolingOff#3~4",
+      "horizon": "30m",
+      "partialStates": 1
+    },
+    {
+      "scope": "CoolingOff#3~3",
+      "horizon": "30m",
+      "partialStates": 1
+    },
+    {
+      "scope": "CoolingOff#3~2",
+      "horizon": "30m",
+      "partialStates": 1
+    },
+    {
+      "scope": "CoolingOff#3",
+      "horizon": "30m",
+      "partialStates": 1
+    },
+    {
+      "scope": "Pickup#3~4",
+      "horizon": "1h",
+      "partialStates": 1
+    },
+    {
+      "scope": "Pickup#3~3",
+      "horizon": "1h",
+      "partialStates": 1
+    },
+    {
+      "scope": "Pickup#3~2",
+      "horizon": "1h",
+      "partialStates": 1
+    },
+    {
+      "scope": "Pickup#3",
+      "horizon": "1h",
+      "partialStates": 1
+    }
+  ],
+  "bound": {
+    "tDag": "2h17m",
+    "tDagSeconds": 8220,
+    "maxTimerDeliveries_k": 6,
+    "maxProcessingSteps_r": 8,
+    "assumedTimerSkew_delta": "1s",
+    "assumedProcessingDelay_epsilon": "1s",
+    "tMax": "2h17m14s",
+    "tMaxSeconds": 8234,
+    "formula": "T_max <= T_DAG + k*delta + r*epsilon = 2h17m + 6*1s + 8*1s = 2h17m14s",
+    "budget": "3h",
+    "criticalPath": [
+      "Init",
+      "Quote#1",
+      "Book.backoff1~2",
+      "Quote#2~2",
+      "Book.backoff2~4",
+      "Quote#3~4",
+      "CoolingOff#3~4",
+      "Pickup#3~4",
+      "Failed(PickupNotConfirmed)"
+    ]
+  },
+  "assumptions": [
+    "Every scheduled timer is durably delivered within delta of its deadline.",
+    "Every processing step (load, decide, append) completes within epsilon, including bounded append retries.",
+    "If the timer service or event store is unavailable indefinitely, no wall-clock bound follows.",
+    "T_DAG bounds the coordinator's own waiting; it does not force remote participants to reply."
+  ],
+  "warnings": []
+}

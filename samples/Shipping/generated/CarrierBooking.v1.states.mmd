@@ -1,0 +1,88 @@
+stateDiagram-v2
+    state "Init" as s0
+    state "Quote#1" as s1
+    state "Book.backoff1~2" as s2
+    state "CoolingOff#1" as s3
+    state "Book.backoff1" as s4
+    state "Aborted(Killed)" as s5
+    state "Quote#2~2" as s6
+    state "Pickup#1" as s7
+    state "Quote#2" as s8
+    state "Book.backoff2~4" as s9
+    state "CoolingOff#2~2" as s10
+    state "Book.backoff2~3" as s11
+    state "Failed(PickupNotConfirmed)" as s12
+    state "Completed(Dispatched)" as s13
+    state "Book.backoff2~2" as s14
+    state "CoolingOff#2" as s15
+    state "Book.backoff2" as s16
+    state "Quote#3~4" as s17
+    state "Pickup#2~2" as s18
+    state "Quote#3~3" as s19
+    state "Quote#3~2" as s20
+    state "Pickup#2" as s21
+    state "Quote#3" as s22
+    state "Failed(NoCarrierAvailable)" as s23
+    state "CoolingOff#3~4" as s24
+    state "CoolingOff#3~3" as s25
+    state "CoolingOff#3~2" as s26
+    state "CoolingOff#3" as s27
+    state "Pickup#3~4" as s28
+    state "Pickup#3~3" as s29
+    state "Pickup#3~2" as s30
+    state "Pickup#3" as s31
+    [*] --> s0
+    s0 --> s1 : ShipmentRequested
+    s1 --> s2 : TimerFired(Quote#1.T)
+    s1 --> s3 : CarrierBooked
+    s1 --> s4 : CarrierUnavailable
+    s2 --> s6 : TimerFired(Book.backoff1~2.T)
+    s3 --> s7 : TimerFired(CoolingOff#1.T)
+    s4 --> s8 : TimerFired(Book.backoff1.T)
+    s6 --> s9 : TimerFired(Quote#2~2.T)
+    s6 --> s10 : CarrierBooked
+    s6 --> s11 : CarrierUnavailable
+    s7 --> s12 : TimerFired(Pickup#1.T)
+    s7 --> s13 : ShipmentDispatched
+    s8 --> s14 : TimerFired(Quote#2.T)
+    s8 --> s15 : CarrierBooked
+    s8 --> s16 : CarrierUnavailable
+    s9 --> s17 : TimerFired(Book.backoff2~4.T)
+    s10 --> s18 : TimerFired(CoolingOff#2~2.T)
+    s11 --> s19 : TimerFired(Book.backoff2~3.T)
+    s14 --> s20 : TimerFired(Book.backoff2~2.T)
+    s15 --> s21 : TimerFired(CoolingOff#2.T)
+    s16 --> s22 : TimerFired(Book.backoff2.T)
+    s17 --> s23 : TimerFired(Quote#3~4.T)
+    s17 --> s24 : CarrierBooked
+    s17 --> s23 : CarrierUnavailable
+    s18 --> s12 : TimerFired(Pickup#2~2.T)
+    s18 --> s13 : ShipmentDispatched
+    s19 --> s23 : TimerFired(Quote#3~3.T)
+    s19 --> s25 : CarrierBooked
+    s19 --> s23 : CarrierUnavailable
+    s20 --> s23 : TimerFired(Quote#3~2.T)
+    s20 --> s26 : CarrierBooked
+    s20 --> s23 : CarrierUnavailable
+    s21 --> s12 : TimerFired(Pickup#2.T)
+    s21 --> s13 : ShipmentDispatched
+    s22 --> s23 : TimerFired(Quote#3.T)
+    s22 --> s27 : CarrierBooked
+    s22 --> s23 : CarrierUnavailable
+    s24 --> s28 : TimerFired(CoolingOff#3~4.T)
+    s25 --> s29 : TimerFired(CoolingOff#3~3.T)
+    s26 --> s30 : TimerFired(CoolingOff#3~2.T)
+    s27 --> s31 : TimerFired(CoolingOff#3.T)
+    s28 --> s12 : TimerFired(Pickup#3~4.T)
+    s28 --> s13 : ShipmentDispatched
+    s29 --> s12 : TimerFired(Pickup#3~3.T)
+    s29 --> s13 : ShipmentDispatched
+    s30 --> s12 : TimerFired(Pickup#3~2.T)
+    s30 --> s13 : ShipmentDispatched
+    s31 --> s12 : TimerFired(Pickup#3.T)
+    s31 --> s13 : ShipmentDispatched
+    s5 --> [*]
+    s12 --> [*]
+    s13 --> [*]
+    s23 --> [*]
+    %% Every wait state also accepts Kill --> Aborted(Killed) (omitted for readability)

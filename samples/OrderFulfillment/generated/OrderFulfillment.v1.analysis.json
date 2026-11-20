@@ -1,0 +1,44 @@
+{
+  "definition": "OrderFulfillment",
+  "version": 1,
+  "tableHash": "408fc1a731e9f925",
+  "states": 12,
+  "transitions": 38,
+  "terminalOutcomes": [
+    "Aborted(Killed)",
+    "Completed(Fulfilled)",
+    "Failed(TimeoutAfterPayment_Refunded)",
+    "Failed(TimeoutBeforePayment)"
+  ],
+  "waitScopes": [
+    {
+      "scope": "InvPay",
+      "horizon": "5m",
+      "partialStates": 7
+    }
+  ],
+  "bound": {
+    "tDag": "5m",
+    "tDagSeconds": 300,
+    "maxTimerDeliveries_k": 2,
+    "maxProcessingSteps_r": 5,
+    "assumedTimerSkew_delta": "1s",
+    "assumedProcessingDelay_epsilon": "1s",
+    "tMax": "5m7s",
+    "tMaxSeconds": 307,
+    "formula": "T_max <= T_DAG + k*delta + r*epsilon = 5m + 2*1s + 5*1s = 5m7s",
+    "budget": "10m",
+    "criticalPath": [
+      "Init",
+      "InvPay[Inv:wait, Pay:try1]",
+      "Failed(TimeoutAfterPayment_Refunded)"
+    ]
+  },
+  "assumptions": [
+    "Every scheduled timer is durably delivered within delta of its deadline.",
+    "Every processing step (load, decide, append) completes within epsilon, including bounded append retries.",
+    "If the timer service or event store is unavailable indefinitely, no wall-clock bound follows.",
+    "T_DAG bounds the coordinator's own waiting; it does not force remote participants to reply."
+  ],
+  "warnings": []
+}

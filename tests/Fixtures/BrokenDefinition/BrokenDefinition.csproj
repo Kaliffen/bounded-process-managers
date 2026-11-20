@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    Deliberately invalid workflow, NOT part of BoundedPM.slnx. It type-checks as C#, but the bpm
+    compiler rejects it, so `dotnet build` fails. Used by BuildIntegrationTests.
+  -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\Bpm.Core\Bpm.Core.csproj" />
+  </ItemGroup>
+  <Import Project="..\..\..\build\Bpm.targets" />
+</Project>

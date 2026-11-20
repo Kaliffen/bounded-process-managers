@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- A domain: messages, folded state and [BoundedProcess] definitions. Depends only on the DSL. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Bpm.Core\Bpm.Core.csproj" />
+  </ItemGroup>
+
+  <!-- Runs the bpm compiler after the C# build: DSL violations fail the build. -->
+  <Import Project="..\..\build\Bpm.targets" />
+
+</Project>
